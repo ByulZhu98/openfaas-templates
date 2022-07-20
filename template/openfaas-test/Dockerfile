@@ -7,7 +7,7 @@ COPY . /home/app/
 
 # copy .jar file
 # RUN cd function && mvn clean package -U -Dquarkus.package.type=uber-jar  -Dmaven.test.skip=true
-RUN cp /home/app/target/*.jar ./application.jar
+RUN cp /home/app/function/target/demo-1.0-SNAPSHOT-runner.jar ./application.jar
 
 # RUN java -Djarmode=layertools -jar application.jar extract
 
