@@ -1,0 +1,98 @@
+{
+  "id": "helloworld",
+  "version": "1.0",
+  "specVersion": "0.8",
+  "name": "Hello World Workflow",
+  "description": "Inject Hello World",
+  "start": "Initialize Path",
+  "functions": [
+    {
+      "name": "pre function",
+      "type": "custom",
+      "operation": "internal-functions-0.0.0-SNAPSHOT.jar#io.automatiko.internalfunctions.Preprocessor"
+    },
+    {
+      "name": "post function",
+      "type": "custom",
+      "operation": "internal-functions-0.0.0-SNAPSHOT.jar#io.automatiko.internalfunctions.Postprocessor"
+    },
+    {
+      "name": "predict function",
+      "type": "rest",
+      "operation": "http://10.100.121.9:31506/api/predict.json#getscore"
+    }
+  ],
+  "states":[
+    {
+      "name": "Initialize Path",
+      "type": "inject",
+      "data": {
+        "path": "/Users/zzy/Desktop/automatiko-engine/internal-functions/src/test/resources/requestbody.json"
+      },
+      "transition": "PreProcessor Function"
+    },
+    {
+      "name": "PreProcessor Function",
+      "type": "operation",
+      "actions": [
+        {
+          "functionRef": {
+            "refName": "pre function",
+            "arguments": {
+              "path": "${ .path }"
+            }
+          },
+          "actionDataFilter": {
+            "toStateData": "${ .requestbody }"
+          }
+        }
+      ],
+      "stateDataFilter": {
+        "output": "${ .requestbody }"
+      },
+      "transition": "gbdt Function"
+    },
+    {
+      "name": "gbdt Function",
+      "type": "operation",
+      "stateDataFilter": {
+        "output": "${ .score }"
+      },
+      "actions": [
+        {
+          "functionRef": {
+            "refName": "predict function",
+            "arguments": {
+              "requestbody": "${ .requestbody }"
+            }
+          },
+          "actionDataFilter": {
+            "toStateData": "${ .score }"
+          }
+        }
+      ],
+      "transition": "PostProcessor Function"
+    },
+    {
+      "name": "PostProcessor Function",
+      "type": "operation",
+      "stateDataFilter": {
+        "output": "${ .result }"
+      },
+      "actions": [
+        {
+          "functionRef": {
+            "refName": "post function",
+            "arguments": {
+              "score": "${ .score }"
+            }
+          },
+          "actionDataFilter": {
+            "toStateData": "${ .res }"
+          }
+        }
+      ],
+      "end": true
+    }
+  ]
+}

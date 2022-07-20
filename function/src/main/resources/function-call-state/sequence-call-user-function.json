@@ -1,0 +1,52 @@
+{
+  "id": "helloworld",
+  "version": "1.0",
+  "specVersion": "0.8",
+  "name": "Hello World Workflow",
+  "description": "Inject Hello World",
+  "start": "HelloFunction1",
+  "functions": [
+    {
+      "name": "function1",
+      "type": "custom",
+      "operation": "mock-functions-0.0.1-SNAPSHOT.jar#io.automatiko.functions.MockFunctionA"
+    },
+    {
+      "name": "function2",
+      "type": "custom",
+      "operation": "mock-functions-0.0.1-SNAPSHOT.jar#io.automatiko.functions.MockFunctionB"
+    }
+  ],
+  "states":[
+    {
+      "name": "HelloFunction1",
+      "type": "operation",
+      "actions": [
+        {
+          "functionRef": {
+            "refName": "function1",
+            "arguments": {
+              "path": "${ .applicant }"
+            }
+          }
+        }
+      ],
+      "transition": "HelloFunction2"
+    },
+    {
+      "name": "HelloFunction2",
+      "type": "operation",
+      "actions": [
+        {
+          "functionRef": {
+            "refName": "function2",
+            "arguments": {
+              "applicant": "${ .applicant }"
+            }
+          }
+        }
+      ],
+      "end": true
+    }
+  ]
+}

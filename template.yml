@@ -1,0 +1,3 @@
+language: openfaas-test
+welcome_message:  |
+  You have created a function using the quarks template
